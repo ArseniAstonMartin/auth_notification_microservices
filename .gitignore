@@ -1,0 +1,41 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Build output
+target/
+build/
+out/
+*.class
+
+# Logs
+*.log
+logs/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+application-local.yaml
+application-local.yml
+
+# AI and personal mentoring artifacts
+Agents.md
+progress.md
+tasks.json
+prompt_*.md
+.codex/
+.claude/
+.cursor/
+.continue/
+.aider*
+
+# Local assignment notes
+Тестовое задание.md
