@@ -1,3 +1,20 @@
 spring:
   application:
     name: auth
+
+  datasource:
+    url: ${DB_URL}
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  key: ${JWT_KEY}
+  access-token-expiration: 3600000
+  refresh-token-expiration: 86400000
