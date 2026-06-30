@@ -2,37 +2,44 @@ package com.krainet.auth.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
-import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 class SecurityConfiguration(
-    private val authenticationProvider: AuthenticationProvider,
+    private val authenticationProvider: org.springframework.security.authentication.AuthenticationProvider,
 ) {
+
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        jwtAuthenticationFilter: AuthenticationFilter
+        jwtAuthenticationFilter: JwtAuthenticationFilter,
     ): DefaultSecurityFilterChain =
         http
-            .csrf{ it.disable() }
+            .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/auth", "/api/auth/refresh", "/api/auth/login", "/api/auth/register", "/error")
+                    .requestMatchers(
+                        "/api/auth/login",
+                        "/api/auth/register/user",
+                        "/api/auth/register/admin",
+                        "/api/internal/admin-emails",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/error",
+                    )
                     .permitAll()
-                    .requestMatchers("/api/user/**")
-                    .hasRole("ADMIN")
                     .anyRequest()
-                    .fullyAuthenticated()
+                    .authenticated()
             }
-            .sessionManagement{
+            .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authenticationProvider(authenticationProvider)

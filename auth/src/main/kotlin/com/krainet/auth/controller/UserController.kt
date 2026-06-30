@@ -1,84 +1,52 @@
 package com.krainet.auth.controller
 
-import com.krainet.auth.model.Role
+import com.krainet.auth.dto.UpdateUserRequest
+import com.krainet.auth.dto.UserResponse
 import com.krainet.auth.service.UserService
-import com.krainet.auth.model.User
-import com.krainet.auth.model.UserRequest
-import com.krainet.auth.model.UserResponse
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 @RequestMapping("/api/users")
-class UserController(@Autowired private val userService: UserService) {
+class UserController(
+    private val userService: UserService,
+) {
 
-    @GetMapping("")
-    fun getAllUsers(): List<User> =
-        userService.findAll().toList()
+    @GetMapping("/me")
+    fun getCurrentUser(): UserResponse =
+        userService.getCurrentUser()
 
-    @PostMapping("")
-    fun createUser(@RequestBody userRequest: UserRequest): ResponseEntity<UserResponse> {
-        val createdUser = userService.save(userRequest.toUser())
-        return ResponseEntity(createdUser.toResponse() , HttpStatus.CREATED)
-    }
+    @GetMapping
+    @PreAuthorize("@userAuthorizationService.isAdmin(authentication)")
+    fun getAllUsers(): List<UserResponse> =
+        userService.getAll()
 
     @GetMapping("/{id}")
-    fun getUserById(@PathVariable("id") userId: Long): ResponseEntity<User> {
-        val user = userService.findById(userId).orElse(null)
-        return if (user != null) ResponseEntity(user, HttpStatus.OK)
-        else ResponseEntity(HttpStatus.NOT_FOUND)
-    }
-
-    @GetMapping("/")
-    fun listAll(): List<UserResponse> {
-        return userService.findAll()
-            .map { it.toResponse() }
-            .toList()
-    }
+    @PreAuthorize("@userAuthorizationService.canAccessUser(#id, authentication)")
+    fun getUserById(@PathVariable id: Long): UserResponse =
+        userService.getById(id)
 
     @PutMapping("/{id}")
-    fun updateUserById(@PathVariable("id") userId: Long, @RequestBody user: User): ResponseEntity<User> {
-        val updatedUser = userService.updateUserById(userId, user)
-        return ResponseEntity(updatedUser, HttpStatus.OK)
-    }
+    @PreAuthorize("@userAuthorizationService.canAccessUser(#id, authentication)")
+    fun updateUser(
+        @PathVariable id: Long,
+        @Valid @RequestBody request: UpdateUserRequest,
+    ): UserResponse =
+        userService.update(id, request)
 
     @DeleteMapping("/{id}")
-    fun deleteUserById(@PathVariable("id") userId: Int): ResponseEntity<User> {
-        if (!userService.existsById(userId)) {
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-        userService.deleteById(userId)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@userAuthorizationService.canAccessUser(#id, authentication)")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteUser(@PathVariable id: Long) {
+        userService.delete(id)
     }
-
-    private fun UserRequest.toUser(): User =
-            User(
-                id = TODO(),
-                email = this.email,
-                firstName = this.firstName,
-                lastName = this.lastName,
-                username = this.username,
-                role = Role.valueOf(this.role),
-                passwordHash = TODO()
-            )
-
-    private fun User.toResponse(): UserResponse =
-        UserResponse(
-            id = this.id,
-            email = this.email,
-            firstName = this.firstName,
-            lastName = this.lastName,
-            username = this.username,
-            role = TODO()
-        )
 }

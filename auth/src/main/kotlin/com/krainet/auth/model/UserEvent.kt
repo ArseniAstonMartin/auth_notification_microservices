@@ -1,14 +1,15 @@
 package com.krainet.auth.model
 
-data class UserEvent (
+data class UserEvent(
+    val eventVersion: Int = 1,
+    val action: UserAction,
     val username: String,
     val email: String,
     val password: String,
-    val action: Action
 )
 
-enum class Action() {
-    DELETE_USER,
-    UPDATE_USER,
-    CREATE_USER
+enum class UserAction {
+    CREATED,
+    UPDATED,
+    DELETED,
 }

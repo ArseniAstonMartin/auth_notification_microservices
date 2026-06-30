@@ -1,21 +1,19 @@
-version: '3.9'
-
 services:
   auth:
     container_name: auth_service
     build:
       context: auth
       dockerfile: Dockerfile
-      args:
-        DB_URL: ${DB_URL}
-        PG_USER: ${PG_USER}
-        PG_PASSWORD: ${PG_PASSWORD}
     ports:
-      - "8080:8080"
+      - "${AUTH_PORT:-8080}:8080"
     environment:
-      DB_URL: jdbc:postgresql://db:5432/postgres
-      PG_USER: postgres
-      PG_PASSWORD: postgres
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-postgres}
+      PG_USER: ${POSTGRES_USER:-postgres}
+      PG_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      USER_TOPIC: ${USER_TOPIC:-user}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-local-internal-key}
+      JWT_KEY: ${JWT_KEY:-01234567890123456789012345678901}
     depends_on:
       - db
       - kafka
@@ -25,36 +23,44 @@ services:
     build:
       context: notification
       dockerfile: Dockerfile
-      args:
-        DB_URL: ${DB_URL}
-        PG_USER: ${PG_USER}
-        PG_PASSWORD: ${PG_PASSWORD}
     ports:
-      - "8081:8081"
+      - "${NOTIFICATION_PORT:-8081}:8081"
     environment:
-      DB_URL: jdbc:postgresql://db:5432/postgres
-      PG_USER: postgres
-      PG_PASSWORD: postgres
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      USER_TOPIC: ${USER_TOPIC:-user}
+      NOTIFICATION_GROUP_ID: ${NOTIFICATION_GROUP_ID:-notification-service}
+      AUTH_BASE_URL: http://auth:8080
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-local-internal-key}
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: ${MAIL_FROM:-no-reply@notification.local}
     depends_on:
-      - db
       - kafka
+      - auth
+      - mailpit
 
   db:
     container_name: db
     image: postgres:12
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   kafka:
     image: apache/kafka:3.8.0
     ports:
-      - "9092:9092"
+      - "${KAFKA_PORT:-9092}:9092"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
 volumes:
   pgdata: {}
