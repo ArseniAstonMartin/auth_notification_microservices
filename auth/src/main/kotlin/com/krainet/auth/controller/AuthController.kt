@@ -4,7 +4,6 @@ import com.krainet.auth.dto.AuthenticationResponse
 import com.krainet.auth.dto.LoginRequest
 import com.krainet.auth.dto.RegistrationResponse
 import com.krainet.auth.dto.RegisterUserRequest
-import com.krainet.auth.dto.UserResponse
 import com.krainet.auth.service.AuthenticationService
 import com.krainet.auth.service.UserService
 import jakarta.validation.Valid

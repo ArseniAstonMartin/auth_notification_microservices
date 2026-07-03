@@ -35,7 +35,7 @@ class AppConfiguration {
         config.authenticationManager
 
     @Bean
-    fun userTopic(@Value("\${app.kafka.user-topic:user}") userTopic: String): NewTopic =
+    fun userTopic(@Value($$"${app.kafka.user-topic:user}") userTopic: String): NewTopic =
         TopicBuilder
             .name(userTopic)
             .partitions(1)

@@ -1,4 +1,4 @@
--- Test credentials for local verification:
+-- Дефолтные юзеры для теста:
 -- ADMIN: username=admin, password=Admin123!, email=admin@example.com
 -- USER:  username=user,  password=User123!,  email=user@example.com
 

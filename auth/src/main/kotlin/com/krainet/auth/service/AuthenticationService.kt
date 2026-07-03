@@ -14,7 +14,7 @@ class AuthenticationService(
     private val authManager: AuthenticationManager,
     private val userDetailsService: CustomUserDetailsService,
     private val tokenService: TokenService,
-    @Value("\${jwt.access-token-expiration}") private val accessTokenExpiration: Long,
+    @Value($$"${jwt.access-token-expiration}") private val accessTokenExpiration: Long,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 

@@ -11,7 +11,7 @@ import java.util.Date
 
 @Service
 class TokenService(
-    @Value("\${jwt.key}") jwtKey: String,
+    @Value($$"${jwt.key}") jwtKey: String,
 ) {
     private val secretKey = Keys.hmacShaKeyFor(jwtKey.toByteArray())
 

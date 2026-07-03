@@ -15,9 +15,8 @@ class AdminEmailService(
     @Cacheable(cacheNames = ["adminEmails"])
     fun findAdminEmails(): List<String> {
         val emails = userRepository.findByRole(Role.ADMIN)
-            .mapNotNull { admin ->
-                val email = admin.email.trim()
-                if (email.contains('@')) email else null
+            .map { admin ->
+                admin.email.trim()
             }
             .distinct()
 

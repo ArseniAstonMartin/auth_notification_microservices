@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
     name = "auth-admin-client",
     url = "\${clients.auth.base-url}",
 )
-interface AuthAdminClient {
+interface AdminEmailsClient {
 
     @GetMapping("/api/admin-emails")
     fun getAdminEmails(): AdminEmailsResponse

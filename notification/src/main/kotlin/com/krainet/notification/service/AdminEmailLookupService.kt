@@ -7,16 +7,15 @@ import org.springframework.stereotype.Service
 
 @Service
 class AdminEmailLookupService(
-    private val authAdminClient: AuthAdminClient,
+    private val adminEmailClient: AdminEmailClient,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Cacheable(cacheNames = ["adminEmails"], unless = "#result.isEmpty()")
     fun getAdminEmails(): List<String> {
-        val response = authAdminClient.getAdminEmails()
+        val response = adminEmailClient.getAdminEmails()
         val emails = response.emails
             .map { it.trim() }
-            .filter { it.contains('@') }
             .distinct()
 
         if (emails.isEmpty()) {
