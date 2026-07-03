@@ -48,8 +48,6 @@ jwt:
 app:
   kafka:
     user-topic: user
-  internal:
-    api-key: ${INTERNAL_API_KEY:local-internal-key}
 
 springdoc:
   api-docs:

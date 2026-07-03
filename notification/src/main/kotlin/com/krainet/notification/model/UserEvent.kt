@@ -1,6 +1,6 @@
 package com.krainet.notification.model
 
-data class UserEvent (
+data class UserEvent(
     val eventVersion: Int = 1,
     val action: UserAction,
     val username: String,

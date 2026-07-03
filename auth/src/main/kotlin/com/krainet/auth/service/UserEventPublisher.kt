@@ -1,16 +1,16 @@
 package com.krainet.auth.service
 
-import com.krainet.auth.config.KafkaTopicProperties
 import com.krainet.auth.model.UserAction
 import com.krainet.auth.model.UserEvent
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
 class UserEventPublisher(
     private val kafkaTemplate: KafkaTemplate<String, UserEvent>,
-    private val kafkaTopicProperties: KafkaTopicProperties,
+    @Value("\${app.kafka.user-topic:user}") private val userTopic: String,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -28,7 +28,7 @@ class UserEventPublisher(
         )
 
         try {
-            kafkaTemplate.send(kafkaTopicProperties.userTopic, username, event)
+            kafkaTemplate.send(userTopic, username, event)
             log.info("Published user event action={} username={}", action, username)
         } catch (ex: Exception) {
             log.error("Failed to publish user event action={} username={}: {}", action, username, ex.message)

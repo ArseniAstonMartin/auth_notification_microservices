@@ -2,7 +2,7 @@ package com.krainet.auth.config
 
 import com.krainet.auth.service.CustomUserDetailsService
 import org.apache.kafka.clients.admin.NewTopic
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,11 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 @EnableCaching
-@EnableConfigurationProperties(
-    JwtProperties::class,
-    KafkaTopicProperties::class,
-    InternalApiProperties::class,
-)
 class AppConfiguration {
 
     @Bean
@@ -40,9 +35,9 @@ class AppConfiguration {
         config.authenticationManager
 
     @Bean
-    fun userTopic(kafkaTopicProperties: KafkaTopicProperties): NewTopic =
+    fun userTopic(@Value("\${app.kafka.user-topic:user}") userTopic: String): NewTopic =
         TopicBuilder
-            .name(kafkaTopicProperties.userTopic)
+            .name(userTopic)
             .partitions(1)
             .replicas(1)
             .build()

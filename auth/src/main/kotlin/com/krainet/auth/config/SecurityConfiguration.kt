@@ -1,7 +1,10 @@
 package com.krainet.auth.config
 
+import com.krainet.auth.service.CustomUserDetailsService
+import com.krainet.auth.service.TokenService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -17,6 +20,21 @@ class SecurityConfiguration(
 ) {
 
     @Bean
+    fun jwtAuthenticationFilter(
+        userDetailsService: CustomUserDetailsService,
+        tokenService: TokenService,
+    ): JwtAuthenticationFilter =
+        JwtAuthenticationFilter(userDetailsService, tokenService)
+
+    @Bean
+    fun jwtAuthenticationFilterRegistration(
+        jwtAuthenticationFilter: JwtAuthenticationFilter,
+    ): FilterRegistrationBean<JwtAuthenticationFilter> =
+        FilterRegistrationBean(jwtAuthenticationFilter).apply {
+            isEnabled = false
+        }
+
+    @Bean
     fun securityFilterChain(
         http: HttpSecurity,
         jwtAuthenticationFilter: JwtAuthenticationFilter,
@@ -29,7 +47,7 @@ class SecurityConfiguration(
                         "/api/auth/login",
                         "/api/auth/register/user",
                         "/api/auth/register/admin",
-                        "/api/internal/admin-emails",
+                        "/api/admin-emails",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",

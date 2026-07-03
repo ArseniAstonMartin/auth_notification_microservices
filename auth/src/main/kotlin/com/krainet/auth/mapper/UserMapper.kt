@@ -28,7 +28,7 @@ class UserMapper {
             email = request.email?.trim()?.lowercase() ?: existing.email,
             firstName = request.firstName?.trim() ?: existing.firstName,
             lastName = request.lastName?.trim() ?: existing.lastName,
-            role = request.role ?: existing.role,
+            role = existing.role,
         )
 
     fun toResponse(user: User): UserResponse =

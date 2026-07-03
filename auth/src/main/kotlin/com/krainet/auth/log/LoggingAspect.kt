@@ -24,7 +24,10 @@ class LoggingAspect {
         log.info("Controller success: {}", joinPoint.signature.toShortString())
     }
 
-    @AfterThrowing(pointcut = "execution(* com.krainet.auth..*(..))", throwing = "ex")
+    @AfterThrowing(
+        pointcut = "execution(* com.krainet.auth.controller..*(..)) || execution(* com.krainet.auth.service..*(..))",
+        throwing = "ex",
+    )
     fun logAfterThrowing(joinPoint: JoinPoint, ex: Throwable) {
         log.error(
             "Exception in {}: {} - {}",

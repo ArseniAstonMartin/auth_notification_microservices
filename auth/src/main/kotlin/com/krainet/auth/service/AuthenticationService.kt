@@ -1,10 +1,10 @@
 package com.krainet.auth.service
 
-import com.krainet.auth.config.JwtProperties
 import com.krainet.auth.dto.AuthenticationResponse
 import com.krainet.auth.dto.LoginRequest
 import com.krainet.auth.security.ApplicationUserDetails
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ class AuthenticationService(
     private val authManager: AuthenticationManager,
     private val userDetailsService: CustomUserDetailsService,
     private val tokenService: TokenService,
-    private val jwtProperties: JwtProperties,
+    @Value("\${jwt.access-token-expiration}") private val accessTokenExpiration: Long,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -28,7 +28,7 @@ class AuthenticationService(
         val userDetails = userDetailsService.loadUserByUsername(request.login.trim()) as ApplicationUserDetails
         val accessToken = tokenService.generateAccessToken(
             userDetails,
-            jwtProperties.accessTokenExpiration,
+            accessTokenExpiration,
         )
 
         log.info("Login successful for userId={} username={}", userDetails.userId, userDetails.username)

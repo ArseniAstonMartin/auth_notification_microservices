@@ -42,8 +42,6 @@ data class UpdateUserRequest(
 
     @field:Size(max = 100, message = "Last name must not exceed 100 characters")
     val lastName: String? = null,
-
-    val role: Role? = null,
 )
 
 data class LoginRequest(

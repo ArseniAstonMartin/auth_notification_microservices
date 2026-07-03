@@ -1,19 +1,19 @@
 package com.krainet.auth.service
 
-import com.krainet.auth.config.JwtProperties
 import com.krainet.auth.security.ApplicationUserDetails
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.util.Date
 
 @Service
 class TokenService(
-    jwtProperties: JwtProperties,
+    @Value("\${jwt.key}") jwtKey: String,
 ) {
-    private val secretKey = Keys.hmacShaKeyFor(jwtProperties.key.toByteArray())
+    private val secretKey = Keys.hmacShaKeyFor(jwtKey.toByteArray())
 
     fun generateAccessToken(userDetails: ApplicationUserDetails, expirationMs: Long): String {
         val expirationDate = Date(System.currentTimeMillis() + expirationMs)

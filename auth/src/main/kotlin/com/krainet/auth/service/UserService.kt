@@ -153,9 +153,5 @@ class UserService(
                 throw DuplicateUserException("Email already taken: $email")
             }
         }
-
-        if (!securityUtils.isAdmin() && request.role != null && request.role != existing.role) {
-            throw org.springframework.security.access.AccessDeniedException("Users cannot change their own role")
-        }
     }
 }
