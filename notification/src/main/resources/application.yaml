@@ -35,12 +35,6 @@ spring:
         spring.json.value.default.type: com.krainet.notification.model.UserEvent
         spring.json.use.type.headers: false
 
-  cache:
-    type: caffeine
-    cache-names: adminEmails
-    caffeine:
-      spec: expireAfterWrite=30m,maximumSize=100
-
 logging:
   level:
     com.krainet.notification: INFO
